@@ -809,6 +809,7 @@ private:
                 continue;
             }
             Require(GuestMemory::Watched(range.address, range.bytes), "initial multisampled DCC contents require watched guest memory");
+            GuestMemory::ForgetKnownZero(range.address, range.bytes);
             range.generation = collectBlocks(range.address, range.bytes);
             Require(range.generation != 0, "initial multisampled DCC contents have no write generation");
             watched.push_back(range);
@@ -829,6 +830,7 @@ private:
             fmaskCopy.compared = !WatchedAfterSettle(context, range.address, range.bytes) && ComparedHostImportCovers(context, range.address, range.bytes);
             Require(fmaskCopy.compared || GuestMemory::Watched(range.address, range.bytes), "native FMASK contents require watched guest memory");
             if (!fmaskCopy.compared) {
+                GuestMemory::ForgetKnownZero(range.address, range.bytes);
                 range.generation = GuestMemory::CollectWritesUncached(range.address, range.bytes);
                 Require(range.generation != 0, "native FMASK contents have no write generation");
             }
